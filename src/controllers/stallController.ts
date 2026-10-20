@@ -10,13 +10,13 @@ export class StallController {
 
   private handleError(res: Response, error: unknown): Response {
     if (error instanceof Error && error.message === 'STALL_NOT_FOUND') {
-      return res.status(404).json({ status: 'fail', message: 'Data warung tidak ditemukan' });
+      return res.status(404).json({ status: 'fail', message: 'Data Warung Tidak Ditemukan' });
     }
-    return res.status(500).json({
-      status: 'error',
-      message: 'Terjadi kesalahan pada server',
-      error: error instanceof Error ? error.message : String(error),
-    });
+    if (error instanceof Error && error.message === 'STALL_FORBIDDEN') {
+      return res.status(403).json({ status: 'fail', message: 'Forbidden - Bukan Pemilik Warung' });
+    }
+    console.error(error);
+    return res.status(500).json({ status: 'error', message: 'Terjadi Kesalahan Pada Server' });
   }
 
   getStalls = async (req: Request, res: Response): Promise<Response> => {
@@ -59,7 +59,7 @@ export class StallController {
 
   createStall = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const stall = await this.stallService.createStall(req.body);
+      const stall = await this.stallService.createStall({ ...req.body, ownerId: req.user!.id });
       return res.status(201).json({ status: 'success', data: stall });
     } catch (error) {
       return this.handleError(res, error);
@@ -68,7 +68,7 @@ export class StallController {
 
   updateStall = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const stall = await this.stallService.updateStall(Number(req.params.id), req.body);
+      const stall = await this.stallService.updateStall(Number(req.params.id), req.body, req.user!);
       return res.status(200).json({ status: 'success', data: stall });
     } catch (error) {
       return this.handleError(res, error);

@@ -1,7 +1,15 @@
-import { UserRepository, type CreateUserInput, type FindAllParams } from '../repositories/userRepository.ts';
+import { UserRepository, type FindAllParams } from '../repositories/userRepository.ts';
 import type { UserResponseDto } from '../dtos/userDto.ts';
+import { hashPassword } from '../utils/password.ts';
 
 type UserRow = NonNullable<Awaited<ReturnType<UserRepository['findById']>>>;
+
+export interface NewUserInput {
+  name: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'owner' | 'customer';
+}
 
 export class UserService {
   private userRepository: UserRepository;
@@ -10,7 +18,7 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  private toDto(row: UserRow): UserResponseDto {
+  toDto(row: UserRow): UserResponseDto {
     return {
       id: row.id,
       name: row.name,
@@ -25,11 +33,18 @@ export class UserService {
     return { data: rows.map((row) => this.toDto(row)), total };
   }
 
-  async createUser(input: CreateUserInput): Promise<UserResponseDto> {
+  async createUser(input: NewUserInput): Promise<UserResponseDto> {
     const existing = await this.userRepository.findByEmail(input.email);
     if (existing) throw new Error('EMAIL_EXISTS');
 
-    const row = await this.userRepository.create(input);
+    const passwordHash = await hashPassword(input.password);
+
+    const row = await this.userRepository.create({
+      name: input.name,
+      email: input.email,
+      passwordHash,
+      role: input.role,
+    });
     if (!row) throw new Error('USER_NOT_FOUND');
     return this.toDto(row);
   }

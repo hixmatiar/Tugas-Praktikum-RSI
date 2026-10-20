@@ -1,6 +1,4 @@
 import type { Request, Response } from 'express';
-import { MenuItemRepository } from '../repositories/menuItemRepository.ts';
-import { StallRepository } from '../repositories/stallRepository.ts';
 import { MenuItemService } from '../services/menuItemService.ts';
 
 export class MenuItemController {

@@ -20,7 +20,6 @@ export class StallService {
     this.menuItemRepository = menuItemRepository;
   }
 
-  // Mapping row DB -> DTO API (sekaligus logika bisnis isPopular).
   private toDto(row: StallRow): StallResponseDto {
     const avgRating = Number(row.avgRating);
     return {
@@ -59,7 +58,17 @@ export class StallService {
     return this.toDto(row);
   }
 
-  async updateStall(id: number, input: Partial<CreateStallInput>): Promise<StallResponseDto> {
+  async updateStall(
+    id: number,
+    input: Partial<CreateStallInput>,
+    actor: { id: number; role: 'admin' | 'owner' | 'customer' },
+  ): Promise<StallResponseDto> {
+    const existing = await this.stallRepository.findById(id);
+    if (!existing) throw new Error('STALL_NOT_FOUND');
+    if (actor.role !== 'admin' && existing.ownerId !== actor.id) {
+      throw new Error('STALL_FORBIDDEN');
+    }
+
     const row = await this.stallRepository.update(id, input);
     if (!row) throw new Error('STALL_NOT_FOUND');
     return this.toDto(row);

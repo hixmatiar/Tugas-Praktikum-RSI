@@ -1,5 +1,6 @@
-import { ReviewRepository, type CreateReviewInput, type FindAllParams } from '../repositories/reviewRepository.ts';
+import { ReviewRepository, type FindAllParams } from '../repositories/reviewRepository.ts';
 import { UserRepository } from '../repositories/userRepository.ts';
+import { StallRepository } from '../repositories/stallRepository.ts';
 import type { ReviewResponseDto } from '../dtos/reviewDto.ts';
 
 type ReviewRow = NonNullable<Awaited<ReturnType<ReviewRepository['findById']>>>;
@@ -8,13 +9,16 @@ type UserRow = NonNullable<Awaited<ReturnType<UserRepository['findById']>>>;
 export class ReviewService {
   private reviewRepository: ReviewRepository;
   private userRepository: UserRepository;
+  private stallRepository: StallRepository;
 
   constructor(
     reviewRepository: ReviewRepository = new ReviewRepository(),
     userRepository: UserRepository = new UserRepository(),
+    stallRepository: StallRepository = new StallRepository(),
   ) {
     this.reviewRepository = reviewRepository;
     this.userRepository = userRepository;
+    this.stallRepository = stallRepository;
   }
 
   private async toDto(row: ReviewRow): Promise<ReviewResponseDto> {
@@ -36,10 +40,22 @@ export class ReviewService {
     return Promise.all(rows.map((row) => this.toDto(row)));
   }
 
-  async createReview(input: CreateReviewInput): Promise<ReviewResponseDto> {
-    const row = await this.reviewRepository.create(input);
+  async createReview(
+    stallId: number,
+    userId: number,
+    input: { rating: number; comment?: string },
+  ): Promise<ReviewResponseDto> {
+    const stall = await this.stallRepository.findById(stallId);
+    if (!stall) throw new Error('STALL_NOT_FOUND');
+
+    const row = await this.reviewRepository.create({
+      stallId,
+      userId,
+      rating: input.rating,
+      comment: input.comment ?? null,
+    });
     if (!row) throw new Error('REVIEW_NOT_FOUND');
-    await this.reviewRepository.recalculateStallRating(input.stallId);
+    await this.reviewRepository.recalculateStallRating(stallId);
     return this.toDto(row);
   }
 

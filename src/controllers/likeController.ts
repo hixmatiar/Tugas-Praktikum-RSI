@@ -21,8 +21,8 @@ export class LikeController {
 
   toggleLike = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { reviewId, userId } = req.body;
-      const like = await this.likeService.toggleLike(reviewId, userId);
+      const { reviewId } = req.body;
+      const like = await this.likeService.toggleLike(reviewId, req.user!.id);
       return res.status(200).json({ status: 'success', data: like });
     } catch (error) {
       return this.handleError(res, error);

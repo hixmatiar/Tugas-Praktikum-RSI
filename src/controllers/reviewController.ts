@@ -12,11 +12,11 @@ export class ReviewController {
     if (error instanceof Error && error.message === 'REVIEW_NOT_FOUND') {
       return res.status(404).json({ status: 'fail', message: 'Review tidak ditemukan' });
     }
-    return res.status(500).json({
-      status: 'error',
-      message: 'Terjadi kesalahan pada server',
-      error: error instanceof Error ? error.message : String(error),
-    });
+    if (error instanceof Error && error.message === 'STALL_NOT_FOUND') {
+      return res.status(404).json({ status: 'fail', message: 'Data warung tidak ditemukan' });
+    }
+    console.error(error);
+    return res.status(500).json({ status: 'error', message: 'Terjadi kesalahan pada server' });
   }
 
   getReviews = async (req: Request, res: Response): Promise<Response> => {
@@ -37,7 +37,11 @@ export class ReviewController {
 
   createReview = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const review = await this.reviewService.createReview(req.body);
+      const review = await this.reviewService.createReview(
+        Number(req.params.id),
+        req.user!.id,
+        req.body,
+      );
       return res.status(201).json({ status: 'success', data: review });
     } catch (error) {
       return this.handleError(res, error);

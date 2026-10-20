@@ -1,6 +1,7 @@
 import { and, count, eq, like, type SQL } from 'drizzle-orm';
 import { getDb } from '../db/index.ts';
 import { users } from '../db/schema.ts';
+import { assertValidPasswordHash } from '../utils/password.ts';
 
 export interface FindAllParams {
   search?: string;
@@ -57,6 +58,8 @@ export class UserRepository {
   }
 
   async create(input: CreateUserInput) {
+    assertValidPasswordHash(input.passwordHash);
+
     const db = await getDb();
     const rows = await db
       .insert(users)
