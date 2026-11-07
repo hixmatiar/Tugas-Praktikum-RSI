@@ -2,9 +2,7 @@
 
 Aplikasi web untuk mereview warung dan kantin. Pengguna bisa melihat daftar warung, membaca menu, menulis ulasan, dan menyukai ulasan orang lain. Pemilik warung mengelola warung dan menunya sendiri. Admin memoderasi laporan ulasan dan memantau log aktivitas.
 
-Proyek ini dibuat untuk Praktikum RSI 2026 (integrasi full stack: fetch, autentikasi, RBAC, dan CRUD).
-
-Dibuat oleh Muhammad Ghazy Hikmatiar.
+By oleh Muhammad Ghazy Hikmatiar.
 
 ## Teknologi
 
@@ -192,25 +190,6 @@ Buka `http://localhost:5173` di browser.
 | `http://localhost:3000/api-docs` | Dokumentasi Swagger UI |
 | `http://localhost:3000/api-docs/openapi.json` | Dokumen OpenAPI mentah |
 | `http://localhost:3000/health` | Cek server dan koneksi database |
-
-## Perintah yang Tersedia
-
-### Backend (`backend/`)
-
-| Perintah | Fungsi |
-| --- | --- |
-| `npm run dev` | Menjalankan server dengan auto reload |
-| `npm start` | Menjalankan server tanpa auto reload |
-| `npm run typecheck` | Memeriksa tipe TypeScript |
-
-### Frontend (`frontend/`)
-
-| Perintah | Fungsi |
-| --- | --- |
-| `npm run dev` | Menjalankan dev server Vite |
-| `npm run build` | Memeriksa tipe lalu membuat build produksi di `dist/` |
-| `npm run preview` | Menjalankan hasil build secara lokal |
-| `npm run lint` | Menjalankan ESLint |
 
 ## Ringkasan Endpoint
 
