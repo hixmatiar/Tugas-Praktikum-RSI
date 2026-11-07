@@ -185,7 +185,7 @@ export function MyReviewsPage() {
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-xs text-text-muted">{review.likeCount} suka</span>
                   <div className="flex gap-1">
-                    <Button variant="ghost" className="h-8 px-2" onClick={() => openEdit(review)}>
+                    <Button variant="secondary" className="h-8 px-2" onClick={() => openEdit(review)}>
                       <Pencil className="size-3.5" aria-hidden="true" />
                       Edit
                     </Button>

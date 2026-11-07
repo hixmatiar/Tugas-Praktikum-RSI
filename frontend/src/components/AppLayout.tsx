@@ -81,7 +81,7 @@ export function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-page text-text">
       <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 lg:px-8">
-        <div className="tile mx-auto w-full max-w-7xl bg-surface/90 px-3 backdrop-blur sm:px-4">
+        <div className="tile mx-auto w-full max-w-[76rem] bg-surface/90 px-3 backdrop-blur sm:px-4">
           <div className="flex min-h-16 items-center gap-8 py-2">
             <Link to="/" className="mr-1 flex shrink-0 items-center gap-4">
               <img src="/ghazy.svg" alt="Logo Dahar Lurr" className='size-10'/>
@@ -165,7 +165,7 @@ export function AppLayout() {
       </main>
 
       <footer className="px-3 pb-4 sm:px-6 lg:px-8">
-        <div className="tile mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 text-xs text-text-muted sm:px-5">
+        <div className="tile mx-auto flex w-full max-w-[76rem] flex-wrap items-center justify-between gap-2 px-4 py-3 text-xs text-text-muted sm:px-5">
           <span className='text-primary'>Dahar Lurr ~ Praktikum RSI 2026</span>
           <span className="inline-flex items-center gap-4 text-primary">
             <UserRound className="size-3.5 text-primary" aria-hidden="true" />

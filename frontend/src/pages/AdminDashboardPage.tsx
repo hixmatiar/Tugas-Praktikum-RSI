@@ -469,7 +469,7 @@ export function AdminDashboardPage() {
                   </p>
                   <div className="flex justify-end gap-1 border-t border-border pt-2">
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       className="h-8 px-2"
                       onClick={() => openEditStall(stall)}
                     >
@@ -477,7 +477,7 @@ export function AdminDashboardPage() {
                       Edit
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="danger"
                       className="h-8 px-2 text-danger hover:bg-danger-bg"
                       onClick={() => {
                         setDeletingStall(stall);
@@ -532,14 +532,14 @@ export function AdminDashboardPage() {
                     {flag.status === 'pending' ? (
                       <div className="flex flex-wrap gap-2 border-t border-border pt-3">
                         <Button
-                          variant="secondary"
+                          variant="primary"
                           className="h-8"
                           onClick={() => void handleFlagStatus(flag, 'resolved')}
                         >
                           Tandai Selesai
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="secondary"
                           className="h-8"
                           onClick={() => void handleFlagStatus(flag, 'dismissed')}
                         >
@@ -580,7 +580,7 @@ export function AdminDashboardPage() {
                       <div className="flex items-center gap-2">
                         <RatingStars rating={review.rating} />
                         <Button
-                          variant="ghost"
+                          variant="danger"
                           className="h-8 px-2 text-danger hover:bg-danger-bg"
                           onClick={() => {
                             setDeletingReview(review);

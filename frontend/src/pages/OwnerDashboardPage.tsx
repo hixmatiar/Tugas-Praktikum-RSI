@@ -63,6 +63,7 @@ export function OwnerDashboardPage() {
   const [deletingStall, setDeletingStall] = useState<Stall | null>(null);
   const [editingStall, setEditingStall] = useState<Stall | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isCreatingStall, setIsCreatingStall] = useState(false);
   const [menuForm, setMenuForm] = useState<MenuFormState>(emptyMenuForm);
   const [stallForm, setStallForm] = useState({
     name: '',
@@ -139,6 +140,18 @@ export function OwnerDashboardPage() {
       location: stall.location ?? '',
       description: stall.description ?? '',
     });
+    setModalError(null);
+  }
+
+function openCreateStall(): void {
+    setIsCreatingStall(true);
+    setStallForm({
+      name: '',
+      category: '',
+      location: '',
+      description: '',
+    });
+    setEditingStall(null);
     setModalError(null);
   }
 
@@ -250,6 +263,30 @@ export function OwnerDashboardPage() {
     }
   }
 
+  async function handleStallCreateSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    setIsSaving(true);
+    setModalError(null);
+    setNotice(null);
+
+    try {
+      await stallsApi.create({
+        ownerId: ownerId!,
+        name: stallForm.name.trim(),
+        category: stallForm.category.trim() || null,
+        location: stallForm.location.trim() || null,
+        description: stallForm.description.trim() || null,
+      });
+      setIsCreatingStall(false);
+      setNotice('Warung berhasil dibuat.');
+      await load();
+    } catch (submitError) {
+      setModalError(getApiErrorMessage(submitError));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   function closeMenuModal(): void {
     setMenuModalOpen(false);
     setEditingMenu(null);
@@ -257,6 +294,7 @@ export function OwnerDashboardPage() {
   }
 
   function closeStallModal(): void {
+    setIsCreatingStall(false);
     setEditingStall(null);
     setModalError(null);
   }
@@ -272,10 +310,16 @@ export function OwnerDashboardPage() {
         title="Dashboard Warung"
         description="Kelola menu dan review pada warung milikmu. Perubahan hanya berlaku untuk warung yang kamu kelola."
         actions={
-          <Button onClick={openCreateMenu} disabled={stalls.length === 0}>
-            <Plus className="size-4" aria-hidden="true" />
-            Tambah Menu
-          </Button>
+          <>
+            <Button onClick={openCreateMenu} disabled={stalls.length === 0}>
+              <Plus className="size-4" aria-hidden="true" />
+              Tambah Menu
+            </Button>
+            <Button onClick={openCreateStall} disabled={isSaving}>
+              <Plus className="size-4" aria-hidden="true" />
+              Tambah Warung
+            </Button>
+          </>
         }
       />
 
@@ -363,12 +407,12 @@ export function OwnerDashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex justify-end gap-1 border-t border-border pt-3">
-                    <Button variant="ghost" className="h-8 px-2" onClick={() => openEditStall(stall)}>
+                    <Button variant="secondary" className="h-8 px-2" onClick={() => openEditStall(stall)}>
                       <Pencil className="size-3.5" aria-hidden="true" />
                       Edit
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="danger"
                       className="h-8 px-2 text-danger hover:bg-danger-bg"
                       onClick={() => {
                         setDeletingStall(stall);
@@ -419,12 +463,12 @@ export function OwnerDashboardPage() {
                       {formatCurrency(menu.price)}
                     </p>
                     <div className="flex justify-end gap-1 border-t border-border pt-2">
-                      <Button variant="ghost" className="h-8 px-2" onClick={() => openEditMenu(menu)}>
+                      <Button variant="secondary" className="h-8 px-2" onClick={() => openEditMenu(menu)}>
                         <Pencil className="size-3.5" aria-hidden="true" />
                         Edit
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="danger"
                         className="h-8 px-2 text-danger hover:bg-danger-bg"
                         onClick={() => {
                           setDeletingMenu(menu);
@@ -471,7 +515,7 @@ export function OwnerDashboardPage() {
                     </p>
                     <div className="flex justify-end border-t border-border pt-2">
                       <Button
-                        variant="ghost"
+                        variant="danger"
                         className="h-8 px-2 text-danger hover:bg-danger-bg"
                         onClick={() => {
                           setDeletingReview(review);
@@ -565,9 +609,9 @@ export function OwnerDashboardPage() {
         </Modal>
       ) : null}
 
-      {editingStall ? (
+      {editingStall || isCreatingStall ? (
         <Modal
-          title="Edit Warung"
+          title={editingStall ? 'Edit Warung' : 'Tambah Warung'}
           onClose={closeStallModal}
           footer={
             <>
@@ -580,7 +624,7 @@ export function OwnerDashboardPage() {
               </Button>
               <Button type="submit" form="stall-form" disabled={isSaving}>
                 {isSaving ? <Spinner /> : null}
-                Simpan
+                {editingStall ? 'Simpan' : 'Simpan'}
               </Button>
             </>
           }
@@ -588,7 +632,9 @@ export function OwnerDashboardPage() {
           <form
             id="stall-form"
             className="space-y-4"
-            onSubmit={(event) => void handleStallSubmit(event)}
+            onSubmit={
+              editingStall ? (event) => void handleStallSubmit(event) : (event) => void handleStallCreateSubmit(event)
+            }
           >
             {modalError ? <Alert tone="error">{modalError}</Alert> : null}
             <Field label="Nama warung" htmlFor="stall-name">

@@ -41,7 +41,7 @@ const ok = (description: string) => ({ description });
 export const openApiDocument = {
   openapi: '3.0.3',
   info: {
-    title: 'Maem Bolo API - Hands-On 2',
+    title: 'Dahar Lurr API',
     version: '1.0.0',
     description:
       'API integrasi frontend-backend untuk autentikasi cookie JWT, CRUD warung/menu/review, like, flag, dan audit log.',
@@ -440,7 +440,7 @@ export const openApiDocument = {
       },
       post: {
         tags: ['Stalls'],
-        summary: 'Buat warung (admin)',
+        summary: 'Buat warung (admin, owner pemilik)',
         security: [{ cookieAuth: [] }],
         requestBody: dataBody(ref('StallCreateInput')),
         responses: {

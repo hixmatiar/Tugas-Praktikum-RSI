@@ -42,10 +42,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (active) setUser(currentUser);
       })
       .catch((error: unknown) => {
-        if (!isApiError(error) || (error.status !== 401 && error.status !== 403)) {
+        if (isApiError(error)) {
+          if (error.status === 401) {
+            if (active) setUser(null);
+          } else if (error.status === 403) {
+            console.error('Akses ditolak: ', error.message);
+          } else {
+            if (active) setUser(null);
+          }
+        } else {
           console.error('Gagal memeriksa sesi:', error);
+          if (active) setUser(null);
         }
-        if (active) setUser(null);
       })
       .finally(() => {
         if (active) setIsReady(true);
